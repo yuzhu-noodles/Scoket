@@ -29,9 +29,13 @@ int main(){
 //  servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 //  inet_aton("127.0.0.1",&servaddr.sin_addr);
 
+	int on = 1;
+	if(setsockopt(listenfd,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(on)) < 0) //设置地址重复利用
+		ERR_EXIT("setsockopt");
+
 	if(bind(listenfd,(struct sockaddr*)&servaddr,sizeof(servaddr))<0)
 		ERR_EXIT("bind");
-	if(listen(listenfd,SOMAXCONN)<0)   //成为主动套接字
+	if(listen(listenfd,SOMAXCONN)<0)   //成为被动套接字  SOMAXCONN存放三次握手还未成功的条目
 		ERR_EXIT("listen");
 	struct sockaddr_in peeraddr;
 	socklen_t peerlen = sizeof(peerlen);
